@@ -1,78 +1,118 @@
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 
-gsap.registerPlugin(useGSAP);
+const projects = [
+  {
+    id: 1,
+    title: "Portfolio Website",
+    type: "Project",
+    tech: "React, TypeScript, GSAP",
+    image: "/images/portfolio.png",
+    github: "https://github.com/kumar-div/Portfolio",
+    live: "https://div-portfolio-1.vercel.app/",
+    description: "A modern animated portfolio built with React and TypeScript.",
+  },
+  {
+    id: 2,
+    title: "Cyber Job Simulation",
+    type: "Job Simulation",
+    tech: "Networking, Security, Log Analysis",
+    image: "/images/cyber.png",
+    description:
+      "Analyzed web logs to identify suspicious activity and supported breach investigation.",
+  },
+  {
+    id: 3,
+    title: "Data Analytics Simulation",
+    type: "Job Simulation",
+    tech: "Tableau, Excel, Data Analysis",
+    image: "/images/data.png",
+    description:
+      "Built dashboards and extracted insights using Tableau and Excel.",
+  },
+  {
+    id: 4,
+    title: "Software Engineering Simulation",
+    type: "Job Simulation",
+    tech: "Java, SQL, UML",
+    image: "/images/walmart.png",
+    description:
+      "Designed systems, built data structures, and modeled architecture.",
+  },
+];
 
 const Work = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
   useGSAP(() => {
-  let translateX: number = 0;
+    const cards = gsap.utils.toArray(".work-card");
 
-  function setTranslateX() {
-    const box = document.getElementsByClassName("work-box");
-    const rectLeft = document
-      .querySelector(".work-container")!
-      .getBoundingClientRect().left;
-    const rect = box[0].getBoundingClientRect();
-    const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-    let padding: number =
-      parseInt(window.getComputedStyle(box[0]).padding) / 2;
-    translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
-  }
+    gsap.from(cards, {
+      y: 80,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.2,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 80%",
+      },
+    });
+  }, []);
 
-  setTranslateX();
-
-  let timeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".work-section",
-      start: "top top",
-      end: `+=${translateX}`, // Use actual scroll width
-      scrub: true,
-      pin: true,
-      id: "work",
-    },
-  });
-
-  timeline.to(".work-flex", {
-    x: -translateX,
-    ease: "none",
-  });
-
-  // Clean up (optional, good practice)
-  return () => {
-    timeline.kill();
-    ScrollTrigger.getById("work")?.kill();
-  };
-}, []);
   return (
-    <div className="work-section" id="work">
+    <section className="work-section" id="work" ref={sectionRef}>
       <div className="work-container section-container">
+        
         <h2>
-          Career <span>Progress</span>
+          My <span>Work</span>
         </h2>
-        <div className="work-flex">
-          {[...Array(6)].map((_value, index) => (
-            <div className="work-box" key={index}>
-              <div className="work-info">
-                <div className="work-title">
-                  <h3>0{index + 1}</h3>
 
-                  <div>
-                    <h4>Portfolio Website</h4>
-                    <p>Project</p>
-                  </div>
-                </div>
-                <h4>Tools and features</h4>
-                <p>React, JavaScript, CSS, GSAP</p>
+        <div className="work-grid">
+          {projects.map((project, index) => (
+            <div className="work-card" key={project.id}>
+              
+              <div className="work-number">
+                0{index + 1}
               </div>
-              <WorkImage image="/images/portfolio.png" alt="" />
+
+              <WorkImage image={project.image} alt={project.title} />
+
+              <div className="work-content">
+                <h3>{project.title}</h3>
+                <p className="work-type">{project.type}</p>
+
+                <p className="work-desc">
+                  {project.description}
+                </p>
+
+                <p className="work-tech">
+                  <strong>Tech:</strong> {project.tech}
+                </p>
+
+                <div className="work-links">
+                  {project.live && (
+                    <a href={project.live} target="_blank" rel="noreferrer">
+                      Live →
+                    </a>
+                  )}
+                  {project.github && (
+                    <a href={project.github} target="_blank" rel="noreferrer">
+                      GitHub →
+                    </a>
+                  )}
+                </div>
+              </div>
+
             </div>
           ))}
         </div>
+
       </div>
-    </div>
+    </section>
   );
 };
 
